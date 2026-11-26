@@ -7,7 +7,7 @@ export const site = {
 };
 
 export const contact = {
-  email: 'svenweng@wengyb.com',
+  email: 'sven_weng@wengyb.com',
   wechat: {
     name: '点点寒彬说',
     qrCode: '/contact/wechat-qr.jpg',
