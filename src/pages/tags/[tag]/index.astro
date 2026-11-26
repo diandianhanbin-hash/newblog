@@ -1,0 +1,12 @@
+---
+import Tags from '../../../components/Tags.astro';
+import { getPosts, groupPosts } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return groupPosts(posts, 'tags').map(({ name }) => ({
+    params: { tag: name }, props: { posts, selected: name },
+  }));
+}
+---
+<Tags {...Astro.props} />

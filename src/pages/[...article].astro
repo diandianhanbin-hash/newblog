@@ -1,0 +1,54 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { categoryUrl, getPosts, postExcerpt, postUrl, publicationDate, tagUrl } from '../lib/posts';
+import { site } from '../lib/site';
+import 'katex/dist/katex.min.css';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.flatMap((post) => [post.data.path, ...post.data.aliases].map((path) => ({
+    params: { article: path.slice(1, -'.html'.length) },
+    props: { post },
+  })));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((heading) => heading.depth <= 3);
+---
+<Base title={post.data.title} description={postExcerpt(post) || site.introduction} canonical={postUrl(post)}>
+  <article class="shell article">
+    <header class="article-heading">
+      <div class="article-categories">
+        {post.data.categories.map((name) => <a href={categoryUrl(name)}>{name}</a>)}
+      </div>
+      <h1>{post.data.title}</h1>
+      <div class="article-meta">
+        <span>{post.data.author ?? site.author}</span>
+        <time datetime={post.data.publishedAt}>{publicationDate(post)}</time>
+      </div>
+    </header>
+    <div class:list={['article-grid', toc.length === 0 && 'article-no-toc']}>
+      {toc.length > 0 && <aside class="toc">
+        <details open>
+          <summary>本文目录</summary>
+          <nav aria-label="本文目录">
+            <ul>
+              {toc.map(({ depth, slug, text }) => (
+                <li class:list={[depth === 3 && 'toc-subheading']}><a href={'#' + encodeURIComponent(slug)}>{text}</a></li>
+              ))}
+            </ul>
+          </nav>
+        </details>
+      </aside>}
+      <div class="article-body">
+        <div class="prose"><Content /></div>
+        {post.data.tags.length > 0 && <nav class="tag-list article-tags" aria-label="文章标签">
+          {post.data.tags.map((tag) => <a href={tagUrl(tag)}>{tag}</a>)}
+        </nav>}
+        <a class="text-link" href="/timeline/">返回时间线</a>
+      </div>
+    </div>
+  </article>
+</Base>

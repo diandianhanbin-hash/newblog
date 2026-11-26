@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import { getPosts, postUrl, publicationDate, type Post } from '../lib/posts';
+
+const posts = await getPosts();
+const years = new Map<string, Post[]>();
+for (const post of posts) {
+  const year = publicationDate(post).slice(0, 4);
+  const entries = years.get(year) ?? [];
+  entries.push(post);
+  years.set(year, entries);
+}
+---
+<Base title="时间线" canonical="/timeline/">
+  <section class="shell page-section archive">
+    <header class="page-heading"><h1>时间线</h1><p>{posts.length} 篇文章 · 按发布时间归档</p></header>
+    {[...years].map(([year, entries]) => (
+      <section class="archive-year" aria-labelledby={'year-' + year}>
+        <h2 id={'year-' + year}>{year} <span>{entries.length} 篇</span></h2>
+        <ol>
+          {entries.map((post) => <li>
+            <time datetime={post.data.publishedAt}>{publicationDate(post)}</time>
+            <a href={postUrl(post)}>{post.data.title}</a>
+          </li>)}
+        </ol>
+      </section>
+    ))}
+  </section>
+</Base>

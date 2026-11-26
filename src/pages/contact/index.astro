@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import { contacts, site } from '../../lib/site';
+---
+<Base title="联系">
+  <section class="shell page-section contact-page">
+    <header class="page-heading">
+      <h1>联系</h1><p>点点寒彬 · {site.introduction}</p>
+    </header>
+    <ul class="directory-grid">
+      {contacts.map(({ name, detail, href }) => (
+        <li><a href={href}>{name}<span>{detail}</span></a></li>
+      ))}
+    </ul>
+  </section>
+</Base>

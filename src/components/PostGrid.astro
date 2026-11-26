@@ -1,0 +1,18 @@
+---
+import { categoryUrl, postExcerpt, postUrl, publicationDate, type Post } from '../lib/posts';
+
+const { posts, excerpts = false } = Astro.props as { posts: Post[]; excerpts?: boolean };
+---
+{posts.length === 0 && <p class="empty-state">暂无文章。</p>}
+<ul class:list={['post-grid', !excerpts && 'post-grid-compact']}>
+  {posts.map((post) => (
+    <li class="post-card">
+      <div class="card-meta">
+        <time datetime={post.data.publishedAt}>{publicationDate(post)}</time>
+        <a href={categoryUrl(post.data.categories[0])}>{post.data.categories[0]}</a>
+      </div>
+      <h3><a href={postUrl(post)}>{post.data.title}</a></h3>
+      {excerpts && postExcerpt(post) && <p>{postExcerpt(post)}</p>}
+    </li>
+  ))}
+</ul>

@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import PostGrid from './PostGrid.astro';
+import { groupPosts, tagUrl, type Post } from '../lib/posts';
+
+const { posts, selected } = Astro.props as { posts: Post[]; selected?: string };
+const groups = groupPosts(posts, 'tags');
+const entries = selected ? groups.find(({ name }) => name === selected)!.entries : posts;
+---
+<Base title={selected ? selected + ' · 标签' : '标签'}>
+  <section class="shell page-section">
+    <header class="page-heading"><h1>标签</h1><p>共 {groups.length} 个标签</p></header>
+    <nav class="tag-list" aria-label="按标签筛选">
+      <a href="/tag/" aria-current={!selected ? 'page' : undefined}>全部 <span>{posts.length}</span></a>
+      {groups.map(({ name, entries }) => (
+        <a href={tagUrl(name)} aria-current={selected === name ? 'page' : undefined}>{name} <span>{entries.length}</span></a>
+      ))}
+    </nav>
+    <h2 class="results-heading">{selected ?? '全部文章'} <span>· {entries.length} 篇</span></h2>
+    <PostGrid posts={entries} />
+  </section>
+</Base>

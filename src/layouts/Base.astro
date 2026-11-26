@@ -1,0 +1,86 @@
+---
+import Search from '../components/Search.astro';
+import { categoryUrl, getPosts, groupPosts } from '../lib/posts';
+import { contacts, site } from '../lib/site';
+import '../styles/site.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const { title, description = site.introduction, canonical = Astro.url.pathname } = Astro.props;
+const categories = groupPosts(await getPosts(), 'categories');
+const pathname = Astro.url.pathname;
+const canonicalUrl = new URL(canonical, Astro.site);
+const pageTitle = title ? `${title} | ${site.title}` : site.title;
+const current = (path: string) => pathname === path ? 'page' : undefined;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fbfbfd" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalUrl} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <header class="site-header">
+      <nav class="header-inner shell" aria-label="主导航">
+        <a class="brand" href="/" aria-label={site.title}>
+          <img src="/favicon.svg" width="26" height="26" alt="" />
+          <span>Less is more</span>
+        </a>
+        <div class="nav-links">
+          <a href="/" aria-current={current('/')}>首页</a>
+          <details class="category-menu" id="category-menu">
+            <summary class:list={[pathname.startsWith('/categories/') && 'active']}>
+              分类
+              <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="m2.5 4 3.5 3.5L9.5 4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </summary>
+            <div class="category-dropdown">
+              <a href="/categories/" aria-current={current('/categories/')}>全部分类 <span>{categories.length}</span></a>
+              {categories.map(({ name, entries }) => (
+                <a href={categoryUrl(name)} aria-current={current(categoryUrl(name))}>{name} <span>{entries.length}</span></a>
+              ))}
+            </div>
+          </details>
+          <a href="/tag/" aria-current={pathname.startsWith('/tags/') ? 'page' : current('/tag/')}>标签</a>
+          <a href="/timeline/" aria-current={current('/timeline/') ?? current('/timeLine/')}>时间线</a>
+          <a href="/contact/" aria-current={current('/contact/')}>联系</a>
+        </div>
+        <Search />
+      </nav>
+    </header>
+    <main id="main-content"><slot /></main>
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <div>
+          <a class="footer-title" href="/">{site.title}</a>
+          <p>{site.author} · 2015–{new Date().getFullYear()} · <a href="https://beian.miit.gov.cn/">粤ICP备18127206号</a></p>
+        </div>
+        <nav aria-label="联系方式">
+          {contacts.map(({ name, href }) => <a href={href}>{name}</a>)}
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('#category-menu')!;
+  document.addEventListener('pointerdown', (event) => {
+    if (menu.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+  });
+  menu.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu.open) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
+  });
+</script>

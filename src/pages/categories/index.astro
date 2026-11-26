@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import { categoryUrl, getPosts, groupPosts } from '../../lib/posts';
+
+const groups = groupPosts(await getPosts(), 'categories');
+---
+<Base title="分类">
+  <section class="shell page-section">
+    <header class="page-heading"><h1>分类</h1><p>共 {groups.length} 个分类</p></header>
+    <ul class="directory-grid">
+      {groups.map(({ name, entries }) => <li><a href={categoryUrl(name)}>{name}<span>{entries.length} 篇</span></a></li>)}
+    </ul>
+  </section>
+</Base>

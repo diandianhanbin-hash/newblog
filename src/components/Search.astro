@@ -1,0 +1,112 @@
+<button class="nav-search" type="button" id="open-search" aria-label="搜索文章" aria-haspopup="dialog">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+    <circle cx="10.8" cy="10.8" r="6.1" />
+    <path d="m15.2 15.2 4.3 4.3" stroke-linecap="round" />
+  </svg>
+  <span>搜索</span>
+</button>
+<dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+  <div class="search-header">
+    <h2 id="search-title">搜索文章</h2>
+    <form method="dialog"><button type="submit" class="search-close" aria-label="关闭搜索">×</button></form>
+  </div>
+  <label class="visually-hidden" for="search-input">文章标题或章节名</label>
+  <input type="search" id="search-input" placeholder="输入文章标题或章节关键词" autocomplete="off" autofocus />
+  <p class="search-status" id="search-status" role="status">可搜索文章标题和二级章节。</p>
+  <ul class="search-results" id="search-results"></ul>
+</dialog>
+
+<script>
+  import { search, type SearchEntry } from '../lib/search';
+
+  const trigger = document.querySelector<HTMLButtonElement>('#open-search')!;
+  const dialog = document.querySelector<HTMLDialogElement>('#search-dialog')!;
+  const input = document.querySelector<HTMLInputElement>('#search-input')!;
+  const status = document.querySelector<HTMLParagraphElement>('#search-status')!;
+  const results = document.querySelector<HTMLUListElement>('#search-results')!;
+  let index: Promise<SearchEntry[]> | undefined;
+  let searchVersion = 0;
+  const limit = 30;
+
+  function loadIndex() {
+    index ??= fetch('/search-index.json').then((response) => {
+      if (!response.ok) throw new Error('搜索索引暂不可用');
+      return response.json() as Promise<SearchEntry[]>;
+    }).catch((error: unknown) => {
+      index = undefined;
+      throw error;
+    });
+    return index;
+  }
+
+  async function showResults() {
+    const version = ++searchVersion;
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (!query) {
+      status.textContent = '可搜索文章标题和二级章节。';
+      return;
+    }
+
+    status.textContent = '正在搜索…';
+    try {
+      const hits = search(await loadIndex(), query);
+      if (version !== searchVersion) return;
+      status.textContent = hits.length === 0 ? '没有找到相关标题。' :
+        hits.length > limit ? `找到 ${hits.length} 项，显示前 ${limit} 项。` : `找到 ${hits.length} 项。`;
+      for (const hit of hits.slice(0, limit)) {
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = hit.url;
+        link.append(hit.title);
+        if (hit.section) {
+          const section = document.createElement('span');
+          section.textContent = ' › ' + hit.section;
+          link.append(section);
+        }
+        item.append(link);
+        results.append(item);
+      }
+    } catch {
+      if (version === searchVersion) status.textContent = '搜索加载失败，请再次输入以重试。';
+    }
+  }
+
+  function openSearch() {
+    if (!dialog.open) dialog.showModal();
+    input.focus();
+    void loadIndex().catch(() => {});
+  }
+
+  trigger.addEventListener('click', openSearch);
+  input.addEventListener('input', showResults);
+  input.addEventListener('keydown', (event) => {
+    if (event.isComposing) return;
+    if (event.key === 'ArrowDown') {
+      const firstResult = results.querySelector('a');
+      if (!firstResult) return;
+      event.preventDefault();
+      firstResult.focus();
+    }
+    if (event.key === 'Enter') results.querySelector('a')?.click();
+  });
+  results.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a')) dialog.close();
+  });
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !event.isComposing) {
+      event.preventDefault();
+      dialog.close();
+    }
+  });
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener('close', () => trigger.focus());
+  document.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      openSearch();
+    }
+  });
+</script>
