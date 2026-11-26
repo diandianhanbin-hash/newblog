@@ -148,7 +148,15 @@ ul, ol { margin: 0; }
 }
 .directory-grid a:hover { border-color: #aebfd6; }
 .directory-grid span { font-weight: 400; font-size: .9rem; color: var(--muted); }
-.contact-page .directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.contact-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 1rem; }
+.contact-card {
+  min-width: 0; padding: clamp(1.2rem, 3vw, 2rem); background: var(--paper);
+  border: 1px solid var(--line); border-radius: var(--radius); scroll-margin-top: 1rem;
+}
+.contact-card h2 { font-size: 1.25rem; }
+.contact-card p { margin-top: .45rem; color: var(--muted); }
+.contact-card a { display: inline-block; margin-top: .55rem; overflow-wrap: anywhere; color: var(--accent); }
+.contact-card img { display: block; width: min(100%, 15rem); margin-top: 1rem; }
 .tag-list { display: flex; flex-wrap: wrap; gap: .58rem; }
 .tag-list a {
   display: inline-flex; align-items: center; gap: .45rem; padding: .43rem .8rem; color: var(--muted);
@@ -279,7 +287,7 @@ ul, ol { margin: 0; }
   .category-dropdown { left: -1.75rem; transform: none; }
   .nav-search { grid-row: 1; grid-column: 2; }
   .hero-inner { padding-block: 3.75rem 3rem; }
-  .post-grid, .directory-grid, .contact-page .directory-grid { grid-template-columns: minmax(0, 1fr); }
+  .post-grid, .directory-grid, .contact-options { grid-template-columns: minmax(0, 1fr); }
   .post-card { min-height: auto; }
   .post-grid-compact .post-card { min-height: 0; }
   .archive-year li { grid-template-columns: 5.55rem minmax(0, 1fr); }

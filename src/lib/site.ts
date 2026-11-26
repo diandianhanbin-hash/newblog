@@ -6,9 +6,10 @@ export const site = {
   timeZone: 'Asia/Shanghai',
 };
 
-export const contacts = [
-  { name: 'GitHub', detail: '@diandianhanbin', href: 'https://github.com/diandianhanbin' },
-  { name: '简书', detail: '点点寒彬', href: 'https://www.jianshu.com/u/82eee120776d' },
-  { name: 'CSDN', detail: 'wyb199026', href: 'https://blog.csdn.net/wyb199026' },
-  { name: '邮件', detail: 'svenweng@wengyb.com', href: 'mailto:svenweng@wengyb.com' },
-];
+export const contact = {
+  email: 'svenweng@wengyb.com',
+  wechat: {
+    name: '点点寒彬说',
+    qrCode: '/contact/wechat-qr.jpg',
+  },
+};

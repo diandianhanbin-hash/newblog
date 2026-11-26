@@ -1,16 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { contacts, site } from '../../lib/site';
+import { contact } from '../../lib/site';
 ---
 <Base title="联系">
   <section class="shell page-section contact-page">
     <header class="page-heading">
-      <h1>联系</h1><p>点点寒彬 · {site.introduction}</p>
+      <h1>联系</h1>
     </header>
-    <ul class="directory-grid">
-      {contacts.map(({ name, detail, href }) => (
-        <li><a href={href}>{name}<span>{detail}</span></a></li>
-      ))}
-    </ul>
+    <div class="contact-options">
+      <section class="contact-card" aria-labelledby="contact-email">
+        <h2 id="contact-email">发邮件</h2>
+        <a href={'mailto:' + contact.email}>{contact.email}</a>
+      </section>
+      <section class="contact-card" id="wechat" aria-labelledby="contact-wechat">
+        <h2 id="contact-wechat">{contact.wechat.name}</h2>
+        <p>用微信扫一扫，关注公众号。</p>
+        <img src={contact.wechat.qrCode} alt={'微信公众号「' + contact.wechat.name + '」二维码'} width="430" height="430" />
+      </section>
+    </div>
   </section>
 </Base>

@@ -1,7 +1,7 @@
 ---
 import Search from '../components/Search.astro';
 import { categoryUrl, getPosts, groupPosts } from '../lib/posts';
-import { contacts, site } from '../lib/site';
+import { contact, site } from '../lib/site';
 import '../styles/site.css';
 
 interface Props {
@@ -65,7 +65,8 @@ const current = (path: string) => pathname === path ? 'page' : undefined;
           <p>{site.author} · 2015–{new Date().getFullYear()} · <a href="https://beian.miit.gov.cn/">粤ICP备18127206号</a></p>
         </div>
         <nav aria-label="联系方式">
-          {contacts.map(({ name, href }) => <a href={href}>{name}</a>)}
+          <a href={'mailto:' + contact.email}>发邮件</a>
+          <a href="/contact/#wechat">{contact.wechat.name}公众号</a>
         </nav>
       </div>
     </footer>

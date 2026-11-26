@@ -39,7 +39,7 @@ path: "/notes/example.html"
 ## 迁移记录
 
 - 对照腾讯云托管文件清单与本机 VuePress 原稿，导入 219 篇 Markdown，保留各自的旧 `.html` 地址。历史路径 `/Talk/规则？.html` 对应改名后的《玩蚂蚁》。原云端文章 HTML 共 220 份，下载备份在本机 `.migration/cloud/`，由 Git 忽略。
-- 保留旧站 `/tag/` 和实际可访问的 `/timeline/`。保留现站的 GitHub、简书、CSDN、邮箱和备案入口。
+- 保留旧站 `/tag/`、`/timeline/` 和备案入口。联系页提供邮件和「点点寒彬说」公众号二维码。
 - 已核对的媒体和待补图片见 [旧博客媒体迁移清单](docs/legacy-media.md)。
 
 ## 腾讯云部署
