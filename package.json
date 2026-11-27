@@ -17,7 +17,9 @@
     "astro": "7.4.13",
     "katex": "^0.16.22",
     "rehype-katex": "^7.0.1",
-    "remark-math": "^6.0.0"
+    "rehype-raw": "^7.0.0",
+    "remark-math": "^6.0.0",
+    "unist-util-visit": "^5.2.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
